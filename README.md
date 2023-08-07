@@ -1,7 +1,5 @@
 # Data Science
 
-# First run [0.r](/0.r). to install packages etc. and change the paths.
-
 -----------------------------------------------------------
 
 ## Statistics
@@ -38,9 +36,6 @@ The average of all values after dropping a fixed number of extreme values
  
 **Outlier** :
  A data value that is very different from most of the data.
- 
- **Example**:
- [ex1.1.r](/ex1.1.r).
  
  -----------------------------------------------------------
 ### Estimates of Variability
@@ -80,9 +75,6 @@ The value such that P percent of the values take on this value or less and (100â
 **Interquartile Range**:
 The difference between the 75th percentile and the 25th percentile. IQR.
 
- **Example**:
- [ex1.2.r](/ex1.2.r).
- 
  -----------------------------------------------------------
  
  ### Exploring the Data Distribution
@@ -98,9 +90,6 @@ The difference between the 75th percentile and the 25th percentile. IQR.
  
  **Density Plot**:
  A smoothed version of the histogram, often based on a kernal density estimate.
- 
- **Example**:
-  [ex1.3.r](/ex1.3.r).
   
  :star: **KEY IDEAS** :
 * A frequency histogram plots frequency counts on the y-axis and variable values on the x-axis; it gives a sense of the distribution of the data at a glance.
@@ -123,9 +112,6 @@ The difference between the 75th percentile and the 25th percentile. IQR.
  
  **Pie charts**:
  The frequency or proportion for each category plotted as wedges in a pie.
- 
- **Example**:
- [ex1.4.r](/ex1.4.r).
 
  :star: **KEY IDEAS** :
 * Categorical data is typically summed up in proportions, and can be visualized in a bar chart.
@@ -148,10 +134,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
  
  **Scatterplot**:
  A plot in which the x-axis is the value of one variable, and the y-axis the value of another.
- 
- **Example**:
- [ex1.5.r](/ex1.5.r).
- 
+
   :star: **KEY IDEAS** :
 * The correlation coefficient measures the extent to which two variables are associated with one another.
 * When high values of v1 go with high values of v2, v1 and v2 are positively associated.
