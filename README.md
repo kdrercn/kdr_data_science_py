@@ -402,11 +402,6 @@ The difference between the 75th percentile and the 25th percentile. IQR.
 
   -----------------------------------------------------------
   
-  **Example**:
-  [ex2.1.r](/ex2.1.r).
-
-  -----------------------------------------------------------
-  
   ### SUMMARY
   **In the era of big data, the principles of random sampling remain important when accurate estimates are needed. Random selection of data can reduce bias and yield a higher quality data set than would result from just using the conveniently available data. Knowledge of various sampling and data generating distributions allows us to quantify potential errors in an estimate that might be due to random variation. At the same time, the bootstrap (sampling with replacement from an observed data set) is an attractive “one size fits all” method to determine possible error in sample estimates.**
 
