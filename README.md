@@ -104,7 +104,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
  **Mode**:
  The most commonly occurring category or value in a data set.
  
- **Expected Value:
+ **Expected Value**:
  When the categories can be associated with a numeric value, this gives an average value based on a category’s probability of occurrence.
  
  **Bar charts**:
@@ -243,7 +243,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
 
   ![Standard error formula.](/im/stderr.png)
   
-  :star2: **STANDARD DEVIATION VERSUS STANDARD ERROR**
+  :star2: **STANDARD DEVIATION VERSUS STANDARD ERROR**:
   Do not confuse standard deviation (which measures the variability of individual data points) with standard error (which measures the variability of a sample metric).
 
   :star: **KEY IDEAS** :
@@ -408,3 +408,353 @@ The difference between the 75th percentile and the 25th percentile. IQR.
   -----------------------------------------------------------
 
  
+## Chapter 3 : Statistical Experiments and Significance Testing
+
+-----------------------------------------------------------
+
+  This process starts with a hypothesis (“drug A is better than the existing standard drug,” “price A is more profitable than the existing price B”). An experiment (it might be an A/B test) is designed to test the hypothesis — designed in such a way that, hopefully, will deliver conclusive results. The data is collected and analyzed, and then a conclusion is drawn. 
+
+  ![The classical statistical inference pipeline](/im/pipeline.png)
+
+  ### A/B Testing
+
+  An A/B test is an experiment with two groups to establish which of two treatments, products, procedures, or the like is superior. 
+
+  **Treatment**:
+  Something (drug, price, web headline) to which a subject is exposed.
+
+  **Treatment Group**:
+  A group of subjects exposed to a specific treatment.
+
+  **Control Group**:
+  A group of subjects exposed to no (or standard) treatment.
+
+  **Randomization**:
+  The process of randomly assigning subjects to treatments.
+
+  **Subjects**:
+  The items (web visitors, patients, etc.) that are exposed to treatments.
+
+  **Test Statistic**:
+  The metric used to measure the effect of the treatment.
+
+  :star: **Some examples of A/B testing include** :
+  + Testing two soil treatments to determine which produces better seed germination
+  + Testing two therapies to determine which suppresses cancer more effectively
+  + Testing two prices to determine which yields more net profit
+  + Testing two web headlines to determine which produces more clicks
+  + Testing two web ads to determine which generates more conversions
+
+  :star2: **Why Have a Control Group?**:
+  Why not skip the control group and just run an experiment applying the treatment of interest to only one group, and compare the outcome to prior experience? Without a control group, there is no assurance that “other things are equal” and that any difference is really due to the treatment (or to chance). When you have a control group, it is subject to the same conditions (except for the treatment of interest) as the treatment group. If you simply make a comparison to “baseline” or prior experience, other factors, besides the treatment, might differ
+
+  :star2: Data scientists are less interested in the question:
+  Is the difference between price A and price B statistically significant?
+  than in the question:
+  Which, out of multiple possible prices, is best?
+
+  :star: **KEY IDEAS** :
+  * Subjects are assigned to two (or more) groups that are treated exactly alike, except that the treatment under study differs from one to another.
+  * Ideally, subjects are assigned randomly to the groups.
+
+  -----------------------------------------------------------
+
+  ### Hypothesis Tests (significance tests)
+
+  Purpose is to help you learn whether random chance might be responsible for an observed effect.
+
+  **Null Hypothesis**:
+  The hypothesis that chance is to blame.
+
+  **Alternative Hypothesis**:
+  Counterpoint to the null (what you hope to prove).
+
+  **One-way Test**:
+  Hypothesis test that counts chance results only in one direction.
+
+  **Two-way test**:
+  Hypothesis test that counts chance results in two directions.
+
+  :star2: **MISINTERPRETING RANDOMNESS**: You can observe the human tendency to underestimate randomness in this experiment. Ask several friends to invent a series of 50 coin flips: have them write down a series of random Hs and Ts. Then ask them to actually flip a coin 50 times and write down the results. Have them put the real coin flip results in one pile, and the made-up results in another. It is easy to tell which results are real: the real ones will have longer runs of Hs or Ts. In a set of 50 real coin flips, it is not at all unusual to see five or six Hs or Ts in a row. However, when most of us are inventing random coin flips and we have gotten three or four Hs in a row, we tell ourselves that, for the series to look random, we had better switch to T. The other side of this coin, so to speak, is that when we do see the real-world equivalent of six Hs in a row (e.g., when one headline outperforms another by 10%), we are inclined to attribute it to something real, not just chance.
+
+  :star2: Statistical hypothesis testing was invented as a way to protect researchers from being fooled by random chance.
+
+  :star: **KEY IDEAS** :
+  * A null hypothesis is a logical construct embodying the notion that nothing special has happened, and any effect you observe is due to random chance.
+  * The hypothesis test assumes that the null hypothesis is true, creates a “null model” (a probability model), and tests whether the effect you observe is a reasonable outcome of that model.
+
+  -----------------------------------------------------------
+
+  ### Resampling
+
+  There are two main types of resampling procedures: the bootstrap and permutation tests. The bootstrap is used to assess the reliability of an estimate; it was discussed in the previous chapter ([see](#The Bootstrap)). Permutation tests are used to test hypotheses, typically involving two or more groups, and we discuss those in this section.
+
+  **Permutation test**:
+  The procedure of combining two or more samples together, and randomly (or exhaustively) reallocating the observations to resamples.
+
+  **With or without replacement**:
+  In sampling, whether or not an item is returned to the sample before the next draw.
+
+
+  -----------------------------------------------------------
+
+  ### Permutation Test
+
+  1. Combine the results from the different groups in a single data set.
+  2. Shuffle the combined data, then randomly draw (without replacing) a resample of the same size as group A.
+  3. From the remaining data, randomly draw (without replacing) a resample of the same size as group B.
+  4. Do the same for groups C, D, and so on. 
+  5. Whatever statistic or estimate was calculated for the original samples (e.g., difference in group proportions), calculate it now for the resamples, and record; this constitutes one permutation iteration.
+  6. Repeat the previous steps R times to yield a permutation distribution of the test statistic.
+
+  :star2: Now go back to the observed difference between groups and compare it to the set of permuted differences. If the observed difference lies well within the set of permuted differences, then we have not proven anything — the observed difference is within the range of what chance might produce. However, if the observed difference lies outside most of the permutation distribution, then we conclude that chance is not responsible. In technical terms, the difference is statistically significant.
+
+  -----------------------------------------------------------
+
+  ### Exhaustive and Bootstrap Permutation Test
+
+  In addition to the preceding random shuffling procedure, also called a random permutation test or a randomization test, there are two variants of the permutation test:
+  * An exhaustive permutation test :
+
+  In an exhaustive permutation test, instead of just randomly shuffling and dividing the data, we actually figure out all the possible ways it could be divided. This is practical only for relatively small sample sizes. 
+
+  * A bootstrap permutation test :
+
+  In a bootstrap permutation test, the draws outlined in steps 2 and 3 of the random permutation test are made with replacement instead of without replacement. In this way the resampling procedure models not just the random element in the assignment of treatment to subject, but also the random element in the selection of subjects from a population.
+
+  :star: **KEY IDEAS** :
+  * In a permutation test, multiple samples are combined, then shuffled.
+  * The shuffled values are then divided into resamples, and the statistic of interest is calculated.
+  * This process is then repeated, and the resampled statistic is tabulated.
+  * Comparing the observed value of the statistic to the resampled distribution allows you to judge whether an observed difference between samples might occur by chance.
+
+  -----------------------------------------------------------
+
+  ### Statistical Significance and P-Values
+
+  Statistical significance is how statisticians measure whether an experiment (or even a study of existing data) yields a result more extreme than what chance might produce. If the result is beyond the realm of chance variation, it is said to be statistically significant.
+
+  **P-value**:
+  Short for "probability value," is a measure used in statistical hypothesis testing to assess the strength of evidence against a null hypothesis. P-value helps you determine whether the results you've observed are statistically significant or if they could have occurred due to random chance.
+
+  **Alpha**:
+  The probability threshold of “unusualness” that chance results must surpass, for actual outcomes to be deemed statistically significant.
+
+  **Type 1 Error**:
+  Mistakenly concluding an effect is real (when it is due to chance).
+
+  **Type 2 Error**:
+  Mistakenly concluding an effect is due to chance (when it is real).
+  
+  :star: **KEY IDEAS** :
+  * Significance tests are used to determine whether an observed effect is within the range of chance variation for a null hypothesis model.
+  * The p-value is the probability that results as extreme as the observed results might occur, given a null hypothesis model.
+  * The alpha value is the threshold of “unusualness” in a null hypothesis chance model.
+  * Significance testing has been much more relevant for formal reporting of research than for data science (but has been fading recently, even for the former).
+
+  -----------------------------------------------------------
+
+  ### t-Tests
+
+  **Test Statistic**:
+  A metric for the difference or effect of interest.
+
+  **t-statistic**:
+  A standardized version of the test statistic.
+
+  **t-distribution**:
+  A reference distribution (in this case derived from the null hypothesis), to which the observed t-statistic can be compared.
+  
+  :star: **KEY IDEAS** :
+  * Before the advent of computers, resampling tests were not practical and statisticians used standard reference distributions.
+  * A test statistic could then be standardized and compared to the reference distribution.
+  * One such widely used standardized statistic is the t-statistic.
+
+  -----------------------------------------------------------
+
+  ### Multiple Testing
+
+  **Type 1 error**:
+  Mistakenly concluding that an effect is statistically significant.
+
+  **False Discovery Rate**:
+  Across multiple tests, the rate of making a Type 1 error.
+
+  **Adjustment of p-values**:
+  Accounting for doing multiple tests on the same data.
+
+  **Overfitting**:
+  Fitting the noise.
+
+  :star: **KEY IDEAS** :
+  * Multiplicity in a research study or data mining project (multiple comparisons, many variables, many models, etc.) increases the risk of concluding that something is significant just by chance.
+  * For situations involving multiple statistical comparisons (i.e., multiple tests of significance) there are statistical adjustment procedures.
+  * In a data mining situation, use of a holdout sample with labeled outcome variables can help avoid misleading results.
+
+  -----------------------------------------------------------
+  
+  ### Degrees of Freedom
+
+  :star: **KEY IDEAS** :
+  * The number of degrees of freedom (d.f.) forms part of the calculation to standardize test statistics so they can be compared to reference distributions (t-distribution, F-distribution, etc.).
+  * The concept of degrees of freedom lies behind the factoring of categorical variables into n – 1 indicator or dummy variables when doing a regression (to avoid multicollinearity)
+
+  -----------------------------------------------------------
+  
+  ### ANOVA
+
+  Suppose that, instead of an A/B test, we had a comparison of multiple groups, say A-B-C-D, each with numeric data. The statistical procedure that tests for a statistically significant difference among the groups is called analysis of variance, or ANOVA.
+
+  **Pairwise Comparison**:
+  A hypothesis test (e.g., of means) between two groups among multiple groups.
+
+  **Omnibus Test**:
+  A single hypothesis test of the overall variance among multiple group means.
+
+  **Decomposition of Variance**:
+  Separation of components. contributing to an individual value (e.g., from the overall average, from a treatment mean, and from a residual error).
+
+  **F-statistic**:
+  A standardized statistic that measures the extent to which differences among group means exceeds what might be expected in a chance model.
+
+  **SS**:
+  “Sum of squares,” referring to deviations from some average value.
+  
+  ### F-Statistic
+  
+  Just like the t-test can be used instead of a permutation test for comparing the mean of two groups, there is a statistical test for ANOVA based on the F-statistic.
+  
+  F-statistic is based on the ratio of the variance across group means (i.e., the treatment effect) to the variance due to residual error. The higher this ratio, the more statistically significant the result. 
+  
+  ### Two-Way ANOVA
+  
+  The A-B-C-D test just described is a “one-way” ANOVA, in which we have one factor (group) that is varying. We could have a second factor involved — say, “weekend versus weekday” — with data collected on each combination (group A weekend, group A weekday, group B weekend, etc.). This would be a “two-way ANOVA,” and we would handle it in similar fashion to the one-way ANOVA by identifying the “interaction effect.” After identifying the grand average effect, and the treatment effect, we then separate the weekend and the weekday observations for each group, and find the difference between the averages for those subsets and the treatment average.
+  
+  You can see that ANOVA, then two-way ANOVA, are the first steps on the road toward a full statistical model, such as regression and logistic regression, in which multiple factors and their effects can be modeled.
+  
+    :star: **KEY IDEAS** :
+  * ANOVA is a statistical procedure for analyzing the results of an experiment with multiple groups.
+  * It is the extension of similar procedures for the A/B test, used to assess whether the overall variation among groups is within the range of chance variation.
+  * A useful outcome of an ANOVA is the identification of variance components associated with group treatments, interaction effects, and errors.
+
+  ### Chi-Square Test
+
+  The chi-square test is used with count data to test how well it fits some expected distribution. The most common use of the chi-square statistic in statistical practice is with "rxc" contingency tables, to assess whether the null hypothesis of independence among variables is reasonable.
+
+  **Chi-square Statistic**:
+  A measure of the extent to which some observed data departs from expectation.
+
+  **Expectation or expected**:
+  How we would expect the data to turn out under some assumption, typically the null hypothesis.
+
+  **d.f.**:
+  Degrees of freedom.
+
+  :star2: "r x c" means “rows by columns” — a 2×3 table has two rows and three columns.
+
+  ### Chi-Square Test: A Resampling Approach
+
+  The Pearson residual is defined as:
+
+  ![Pearson Residual formula.](/im/pearsonresidual.png)
+
+  The chi-squared statistic is defined as the sum of the squared Pearson residuals:
+
+  ![Chi-squared Statistic formula.](/im/chisq.png)
+  
+  ###  Chi-Squared Test: Statistical Theory
+  
+  Asymptotic statistical theory shows that the distribution of the chi-squared statistic can be approximated by a chi-square distribution. The appropriate standard chi- square distribution is determined by the degrees of freedom.
+  
+  d.f. = (r - 1) X (c - 1)
+  
+  ### Fisher’s Exact Test
+
+  The chi-square distribution is a good approximation of the shuffled resampling test just described, except when counts are extremely low (single digits, especially five or fewer). In such cases, the resampling procedure will yield more accurate p-values.
+
+  -----------------------------------------------------------
+  
+  ### Relevance for Data Science
+
+  :star2: Most standard uses of the chi-square test, or Fisher’s exact test, are not terribly relevant for data science. In most experiments, whether A-B or A-B-C…, the goal is not simply to establish statistical significance, but rather to arive at the best treatment. For this purpose, multi-armed bandits (see “Multi-Arm Bandit Algorithm”) offer a more complete solution.
+
+  :star2: Chi-square tests are used widely in research by investigators in search of the elusive statistically significant p-value that will allow publication. Chi-square tests, or similar resampling simulations, are used in data science applications more as a filter to determine whether an effect or feature is worthy of further consideration than as a formal test of significance.
+
+    :star: **KEY IDEAS** :
+  * A common procedure in statistics is to test whether observed data counts are consistent with an assumption of independence (e.g., propensity to buy a particular item is independent of gender).
+  * The chi-square distribution is the reference distribution (which embodies the assumption of independence) to which the observed calculated chi-square statistic must be compared.
+
+  -----------------------------------------------------------
+  
+  ### Multi-Arm Bandit Algorithm
+
+  Multi-arm bandits offer an approach to testing, especially web testing, that allows explicit optimization and more rapid decision making than the traditional statistical approach to designing experiments.
+
+  **Multi-arm Bandit**:
+  An imaginary slot machine with multiple arms for the customer to choose from, each with different payoffs, here taken to be an analogy for a multitreatment experiment.
+
+  **Arm**:
+  A treatment in an experiment (e.g., “headline A in a web test”).
+
+  **Win**:
+  The experimental analog of a win at the slot machine (e.g., “customer clicks on the link”).
+
+  You can probably perceive several difficulties with that approach. First, our answer may be inconclusive: “effect not proven.” In other words, the results from the experiment may suggest an effect, but if there is an effect, we don’t have a big enough sample to prove it (to the satisfaction of the traditional statistical standards). What decision do we take? Second, we might want to begin taking advantage of results that come in prior to the conclusion of the experiment. Third, we might want the right to change our minds or to try something different based on additional data that comes in after the experiment is over.data science (and business in general) not so worried about statistical significance, but more concerned with optimizing overall effort and results.
+
+  Here is one simple algorithm, the epsilon-greedy algorithm for an A/B test:
+  1. Generate a random number between 0 and 1
+
+  2. f the number lies between 0 and epsilon (where epsilon is a number between 0 and 1, typically fairly small), flip a fair coin (50/50 probability), and:
+
+  a. If the coin is heads, show offer A.
+  b. If the coin is tails, show offer B.
+
+  3. If the number is ≥ epsilon, show whichever offer has had the highest response rate to date.
+
+  Bandit algorithms can efficiently handle 3+ treatments and move toward optimal selection of the “best.” For traditional statistical testing procedures, the complexity of decision making for 3+ treatments far outstrips that of the traditional A/B test, and the advantage of bandit algorithms is much greater.
+
+    :star: **KEY IDEAS** :
+  * Traditional A/B tests envision a random sampling process, which can lead to excessive exposure to the inferior treatment.
+  * Multi-arm bandits, in contrast, alter the sampling process to incorporate information learned during the experiment and reduce the frequency of the inferior treatment.
+  * They also facilitate efficient treatment of more than two treatments.
+  * There are different algorithms for shifting sampling probability away from the inferior treatment(s) and to the (presumed) superior one.
+
+  -----------------------------------------------------------
+  
+  ### Power and Sample Size
+
+  **Effect Size**:
+  The minimum size of the effect that you hope to be able to detect in a statistical test, such as “a 20% improvement in click rates”.
+
+  **Power**:
+  The probability of detecting a given effect size with a given sample size.
+
+  **Significance Level**:
+  The statistical significance level at which the test will be conducted.
+
+  ### Sample Size
+
+  The most common use of power calculations is to estimate how big a sample you will need.
+
+  In summary, for calculating power or required sample size, there are four moving parts:
+
+  * Sample size
+  * Effect size you want to detect
+  * Significance level (alpha) at which the test will be conducted
+  * Power
+
+  Specify any three of them, and the fourth can be calculated. 
+  
+    :star: **KEY IDEAS** :
+  * Finding out how big a sample size you need requires thinking ahead to the statistical test you plan to conduct.
+  * You must specify the minimum size of the effect that you want to detect.
+  * You must also specify the required probability of detecting that effect size (power).
+  * Finally, you must specify the significance level (alpha) at which the test will be conducted.
+
+  -----------------------------------------------------------
+  
+  ### SUMMARY
+  
+  The principles of experimental design — randomization of subjects into two or more groups receiving different treatments — allow us to draw valid conclusions about how well the treatments work. It is best to include a control treatment of “making no change.” The subject of formal statistical inference — hypothesis testing, p-values, t-tests, and much more along these lines — occupies much time and space in a traditional statistics course or text, and the formality is mostly unneeded from a data science perspective. However, it remains important to recognize the role that random variation can play in fooling the human brain. Intuitive resampling procedures (permutation and bootstrap) allow data scientists to gauge the extent to which chance variation can play a role in their data analysis.
+  
+    -----------------------------------------------------------
