@@ -632,7 +632,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
   
   You can see that ANOVA, then two-way ANOVA, are the first steps on the road toward a full statistical model, such as regression and logistic regression, in which multiple factors and their effects can be modeled.
   
-    :star: **KEY IDEAS** :
+  :star: **KEY IDEAS** :
   * ANOVA is a statistical procedure for analyzing the results of an experiment with multiple groups.
   * It is the extension of similar procedures for the A/B test, used to assess whether the overall variation among groups is within the range of chance variation.
   * A useful outcome of an ANOVA is the identification of variance components associated with group treatments, interaction effects, and errors.
@@ -680,7 +680,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
 
   :star2: Chi-square tests are used widely in research by investigators in search of the elusive statistically significant p-value that will allow publication. Chi-square tests, or similar resampling simulations, are used in data science applications more as a filter to determine whether an effect or feature is worthy of further consideration than as a formal test of significance.
 
-    :star: **KEY IDEAS** :
+  :star: **KEY IDEAS** :
   * A common procedure in statistics is to test whether observed data counts are consistent with an assumption of independence (e.g., propensity to buy a particular item is independent of gender).
   * The chi-square distribution is the reference distribution (which embodies the assumption of independence) to which the observed calculated chi-square statistic must be compared.
 
@@ -713,7 +713,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
 
   Bandit algorithms can efficiently handle 3+ treatments and move toward optimal selection of the “best.” For traditional statistical testing procedures, the complexity of decision making for 3+ treatments far outstrips that of the traditional A/B test, and the advantage of bandit algorithms is much greater.
 
-    :star: **KEY IDEAS** :
+  :star: **KEY IDEAS** :
   * Traditional A/B tests envision a random sampling process, which can lead to excessive exposure to the inferior treatment.
   * Multi-arm bandits, in contrast, alter the sampling process to incorporate information learned during the experiment and reduce the frequency of the inferior treatment.
   * They also facilitate efficient treatment of more than two treatments.
