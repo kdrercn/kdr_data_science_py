@@ -745,7 +745,7 @@ The difference between the 75th percentile and the 25th percentile. IQR.
 
   Specify any three of them, and the fourth can be calculated. 
   
-    :star: **KEY IDEAS** :
+  :star: **KEY IDEAS** :
   * Finding out how big a sample size you need requires thinking ahead to the statistical test you plan to conduct.
   * You must specify the minimum size of the effect that you want to detect.
   * You must also specify the required probability of detecting that effect size (power).
