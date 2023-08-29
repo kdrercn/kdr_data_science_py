@@ -758,3 +758,494 @@ The difference between the 75th percentile and the 25th percentile. IQR.
   The principles of experimental design — randomization of subjects into two or more groups receiving different treatments — allow us to draw valid conclusions about how well the treatments work. It is best to include a control treatment of “making no change.” The subject of formal statistical inference — hypothesis testing, p-values, t-tests, and much more along these lines — occupies much time and space in a traditional statistics course or text, and the formality is mostly unneeded from a data science perspective. However, it remains important to recognize the role that random variation can play in fooling the human brain. Intuitive resampling procedures (permutation and bootstrap) allow data scientists to gauge the extent to which chance variation can play a role in their data analysis.
   
   -----------------------------------------------------------
+## Chapter 4 : Regression and Prediction
+
+-----------------------------------------------------------
+
+Perhaps the most common goal in statistics is to answer the question: Is the variable X associated with a variable Y, and, if so, what is the relationship and can we use it to predict Y?
+
+### Simple Linear Regression
+
+Simple linear regression models the relationship between the magnitude of one variable and that of a second — for example, as X increases, Y also increases. Or as X increases, Y decreases. Correlation is another way to measure how two variables are related: see the section “Correlation”. The difference is that while correlation measures the strength of an association between two variables, regression quantifies the nature of the relationship
+
+**Response**:
+The variable we are trying to predict.
+
+**Independent variable**:
+The variable used to predict the response.
+
+**Record**:predicted values
+The vector of predictor and outcome values for a specific individual or case.
+
+**Intercept**:
+The intercept of the regression line — that is, the predicted value when x=0.
+
+**Regression Coefficient**:
+The slope of the regression line.
+
+**Fitted values**
+The estimates Y'i obtained from the regression line (Predicted value).
+
+**Residuals**:
+The difference between the observed values and the fitted values.
+
+**Least Squares**:
+The method of fitting a regression by minimizing the sum of squared residuals.
+
+### The Regression Equation
+
+Simple linear regression estimates exactly how much Y will change when X changes by a certain amount. With the correlation coefficient, the variables X and Y are interchangable. With regression, we are trying to predict the Y variable from X using a linear relationship.
+
+![Regression Equation formula.](/im/regeq.png)
+ 
+### Fitted Values and Residuals
+ 
+In general, the data doesn’t fall exactly on a line, so the regression equation should include an explicit error term : e¡.
+
+![Explicit Error formula.](/im/experr.png)
+
+The fitted values, also referred to as the predicted values, are typically denoted by (Y-hat). These are given by:
+
+![Fitted Values formula.](/im/fitted.png)
+
+:star2: **HAT NOTATION: ESTIMATES VERSUS KNOWN VALUES**: The “hat” notation is used to differentiate between estimates and known values.
+
+We compute the residuals ê¡ by subtracting the predicted values from the original data:
+
+![Residuals formula.](/im/residual.png)
+ 
+### Least Squares
+
+![Residual Sum of Squares formula.](/im/rss.png)
+
+The estimates ![b hat 0](/im/b0.png) and ![b hat 1](/im/b1.png) are the values that minimize RSS.
+
+![Coefficients' formula.](/im/b1b0.png)
+
+:star2: With the advent of big data, computational speed is still an important factor. Least squares, like the mean, are sensitive to outliers, although this tends to be a signicant problem only in small or moderate-sized problems
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* The regression equation models the relationship between a response variable Y and a predictor ariable X as a line.
+* A regression model yields fitted values and residuals — predictions of the response and the errors of the predictions.
+* Regression models are typically fit by the method of least squares.
+* Regression is used both for prediction and explanation.
+
+-----------------------------------------------------------
+
+### Multiple Linear Regression
+
+When there are multiple predictors, the equation is simply extended to accommodate them:
+
+![Multiple Linear Regression formula.](/im/mls.png)
+
+Instead of a line, we now have a linear model — the relationship between each coefficient and its variable (feature) is linear.
+
+**Root Mean Squared Error**:
+The square root of the average squared error of the regression (this is the most widely used metric to compare regression models).
+
+**Residual Standard Error**:
+The same as the root mean squared error, but adjusted for degrees of freedom.
+
+**R-squared**:
+The proportion of variance explained by the model, from 0 to 1.
+
+**t-statistic**:
+The coefficient for a predictor, divided by the standard error of the coefficient, giving a metric to compare the importance of variables in the model.
+
+**Weighted Regression**:
+Regression with the records having different weights.
+
+All of the other concepts in simple linear regression, such as fitting by least squares and the definition of fitted values and residuals, extend to the multiple linear regression setting. For example, the fitted values are given by:
+
+![Multiple Linear Regression Fitted Values formula.](/im/mlsfv.png)
+
+### Assessing the Model
+
+The most important performance metric from a data science perspective is root mean squared error, or RMSE. RMSE is the square root of the average squared error in the predicted ![y hat i.](/im/yi.png) values:
+
+![RMSE formula.](/im/rmse.png)
+
+This measures the overall accuracy of the model.
+
+Similar to RMSE is the residual standard error, or RSE. In this case we have p predictors, and the RSE is given by:
+
+![RSE formula.](/im/rse.png)
+
+The only difference is that the denominator is the degrees of freedom, as opposed to number of records.
+
+:star2: In practice, for linear regression, the difference between RMSE and RSE is very small, particularly for big data applications.
+
+R-squared ranges from 0 to 1 and measures the proportion of variation in the data that is accounted for in the model. It is useful mainly in explanatory uses of regression where you want to assess how well the model fits the data. The formula for R-squared is:
+
+![r-squared formula.](/im/r2.png)
+
+t-statistic:
+
+![t-statistic formula.](/im/tstat.png)
+
+The t-statistic — and its mirror image, the p-value — measures the extent to which a coefficient is “statistically significant” — that is, outside the range of what a random chance arrangement of predictor and target variable might produce.
+
+:star2: **The higher the t-statistic (and the lower the p-value), the more significant the predictor.**
+
+:warning: Data scientists primarily focus on the t-statistic as a useful guide for whether to include a predictor in a model or not. High t-statistics (which go with p-values near 0) indicate a predictor should be retained in a model, while very low t-statistics indicate a predictor could be dropped. 
+
+### Cross-Validation
+
+Cross-validation extends the idea of a holdout sample to multiple sequential holdout samples. The algorithm for basic k-fold cross-validation is as follows:
+
+1. Set aside 1/k of the data as a holdout sample.
+
+2. Train the model on the remaining data.
+
+3. Apply (score) the model to the 1/k holdout, and record needed model assessment metrics.
+
+4. Restore the first 1/k of the data, and set aside the next 1/k (excluding any records that got picked the first time). 
+
+5. Repeat steps 2 and 3.
+
+6. Repeat until each record has been used in the holdout portion.
+
+7. Average or otherwise combine the model assessment metrics.
+
+### Model Selection and Stepwise Regression
+
+Adding more variables, however, does not necessarily mean we have a better model. Statisticians use the principle of Occam’s razor to guide the choice of a model: all things being equal, a simpler model should be used in preference to a more complicated model.
+
+A metric called AIC (Akaike’s Information Criteria) that penalizes adding terms to a model. In the case of regression, AIC has the form:
+
+![AIC formula.](/im/aic.png)
+
+Where p is the number of variables and n is the number of records. The goal is to find the model that minimizes AIC; models with k more extra variables are penalized by 2k.
+
+:star: **AIC, BIC AND MALLOWS CP**:
+The formula for AIC may seem a bit mysterious, but in fact it is based on asymptotic results in information theory. There are several variants to AIC:
+
+* AICc: a version of AIC corrected for small sample sizes.
+* BIC or Bayesian information criteria: similar to AIC with a stronger penalty for including additional variables to the model.
+* Mallows Cp: A variant of AIC developed by Colin Mallows.
+
+Data scientists generally do not need to worry about the differences among these in-sample metrics or the underlying theory behind them.
+
+**How do we find the model that minimizes AIC?**
+
+One approach is to search through all possible models, called all subset regression. This is computationally expensive and is not feasible for problems with large data and many variables. An attractive alternative is to use stepwise regression, which successively adds and drops predictors to find a model that lowers AIC.
+
+In forward selection, you start with no predictors and add them one-by-one, at each step adding the predictor that has the largest contribution to , stopping when the contribution is no longer statistically significant. In backward selection, or backward elimination, you start with the full model and take away predictors that are not statistically significant until you are left with a model in which all predictors are statistically significant.
+
+:warning: Stepwise regression and all subset regression are in-sample methods to assess and tune models. This means the model selection is possibly subject to overfitting and may not perform as well when applied to new data. One common approach to avoid this is to use cross-validation to validate the models. 
+
+### Weighted Regression
+
+Data scientists may find weighted regression useful in two cases:
+
+* Inverse-variance weighting when different observations have been measured with different precision.
+
+* Analysis of data in an aggregated form such that the weight variable encodes how many original observations each row in the aggregated data represents.
+
+For example, with the housing data, older sales are less reliable than more recent sales.
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* Multiple linear regression models the relationship between a response variable Y and multiple predictor variables.
+* The most important metrics to evaluate a model are root mean squared error (RMSE) and R-squared .
+* The standard error of the coefficients can be used to measure the reliability of a variable’s contribution to a model.
+* Stepwise regression is a way to automatically determine which variables should be included in the model.
+* Weighted regression is used to give certain records more or less weight in fitting the equation.
+
+-----------------------------------------------------------
+
+### Prediction Using Regression
+
+**Prediction Interval**:
+An uncertainty interval around an individual predicted value
+
+**Extrapolation**:
+Extension of a model beyond the range of the data used to fit it.
+
+### The Dangers of Extrapolation
+
+As an extreme case, suppose model_lm ([ex4.3.r](/ex4.3.r) is used to predict the value of a 5,000-square-foot empty lot. In such a case, all the predictors related to the building would have a value of 0 and the regression equation would yield an absurd prediction of – 521,900 + 5,000 × –.0605 = –$522,202. Why did this happen? The data contains only parcels with buildings — there are no records corresponding to vacant land. Consequently, the model has no information to tell it how to predict the sales price for vacant land.
+
+### Confidence and Prediction Intervals
+
+Much of statistics involves understanding and measuring variability (uncertainty). The t-statistics and p-values reported in regression output deal with this in a formal way, which is sometimes useful for variable selection. More useful metrics are confidence intervals, which are uncertainty intervals placed around regression coefficients and predictions. An easy way to understand this is via the bootstrap.
+
+Here is a bootstrap algorithm for generating confidence intervals for regression parameters (coefficients) for a data set with P predictors and n records (rows):
+1. Consider each row (including outcome variable) as a single “ticket” and place all the n tickets in a box.
+2. Draw a ticket at random, record the values, and replace it in the box.
+3. Repeat step 2 n times; you now have one bootstrap resample.
+4. Fit a regression to the bootstrap sample, and record the estimated coefficients.
+5. Repeat steps 2 through 4, say, 1,000 times.
+6. You now have 1,000 bootstrap values for each coefficient; find the appropriate percentiles for each one (e.g., 5th and 95th for a 90% confidence interval).
+
+The individual data point error can be thought of as follows: even if we knew for certain what the regression equation was (e.g., if we had a huge number of records to fit it), the actual outcome values for a given set of predictor values will vary. For example, several houses — each with 8 rooms, a 6,500 square foot lot, 3 bathrooms, and a basement — might have different values. We can model this individual error with the residuals from the fitted values. The bootstrap algorithm for modeling both the regression model error and the individual data point error would look as follows
+
+1. Take a bootstrap sample from the data (spelled out in greater detail earlier).
+2. Fit the regression, and predict the new value.
+3. Take a single residual at random from the original regression fit, add it to the predicted value, and record the result.
+4. Repeat steps 1 through 3, say, 1,000 times.
+5. Find the 2.5th and the 97.5th percentiles of the results.
+
+:star2:  **PREDICTION INTERVAL OR CONFIDENCE INTERVAL?**: Prediction interval pertains to uncertainty around a single value, while a confidence interval pertains to a mean or other statistic calculated from multiple values. Thus, a prediction interval will typically be much wider than a confidence interval for the same value. 
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* Extrapolation beyond the range of the data can lead to error.
+* Confidence intervals quantify uncertainty around regression coefficients.
+* Prediction intervals quantify uncertainty in individual predictions.
+* Most software, R included, will produce prediction and confidence intervals in default or specified output, using formulas.
+* The bootstrap can also be used; the interpretation and idea are the same.
+
+-----------------------------------------------------------
+
+### Factor Variables in Regression
+
+Factor variables, also termed categorical variables, take on a limited number of discrete values.
+For example, a loan purpose can be “debt consolidation,” “wedding,” “car,” and so on. 
+The binary (yes/no) variable, also called an indicator variable, is a special case of a factor variable. 
+Regression requires numerical inputs, so factor variables need to be recoded to use in the model. The most common approach is to convert a variable into a set of binary dummy variables.
+
+**Dummy Variables**:
+Binary 0–1 variables derived by recoding factor data for use in regression and other models
+
+**Reference Coding**:
+The most common type of coding used by statisticians, in which one level of a factor is used as a reference and other factors are compared to that level
+
+**One Hot Encoder**:
+A common type of coding used in the machine learning community in which all factors levels are retained. While useful for certain machine learning algorithms, this approach is not appropriate for multiple linear regression.
+
+**Deviation Coding**:
+A type of coding that compares each level against the overall mean as opposed to the reference level.
+
+### Dummy Variables Representation
+
+The output from the R regression shows two coefficients corresponding to PropertyType: PropertyTypeSingle Family and PropertyTypeTownhouse. There is no coefficient of Multiplex since it is implicitly defined when PropertyTypeSingle Family == 0 and PropertyTypeTownhouse == 0. The coefficients are interpreted as relative to Multiplex, so a home that is Single Family is worth almost $85,000 less, and a home that is Townhouse is worth over $150,000 less.
+
+:star2: With the exception of ordered factors, data scientists will generally not encounter any type of coding besides reference coding or one hot encoder.
+
+### Factor Variables with Many Levels
+
+### Ordered Factor Variables
+
+Some factor variables reflect levels of a factor; these are termed ordered factor variables or ordered categorical variables. For example, the loan grade could be A, B, C, and so on — each grade carries more risk than the prior grade. 
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* Factor variables need to be converted into numeric variables for use in a regression.
+* The most common method to encode a factor variable with P distinct values is to represent them using P-1 dummy variables.
+* A factor variable with many levels, even in very big data sets, may need to be consolidated into a variable with fewer levels.
+* Some factors have levels that are ordered and can be represented as a single numeric variable.
+
+-----------------------------------------------------------
+
+### Interpreting the Regression Equation
+
+In data science, the most important use of regression is to predict some dependent (outcome) variable. In some cases, however, gaining insight from the equation itself to understand the nature of the relationship between the predictors and the outcome can be of value.
+
+**Correlated Variables**:
+When the predictor variables are highly correlated, it is difficult to interpret the individual coefficients.
+
+**Multicollinearity**:
+When the predictor variables have perfect, or near-perfect, correlation, the regression can be unstable or impossible to compute.
+
+**Confounding Variables**:
+An important predictor that, when omitted, leads to spurious relationships in a regression equation.
+
+**Main Effects**:
+The relationship between a predictor and the outcome variable, independent from other variables.
+
+**Interactions**:
+An interdependent relationship between two or more predictors and the response.
+
+### Correlated Predictors
+
+The coefficient for Bedrooms is negative! This implies that adding a bedroom to a house will reduce its value. How can this be? This is because the predictor variables are correlated: larger houses tend to have more bedrooms, and it is the size that drives house value, not the number of bedrooms. Consider two homes of the exact same size: it is reasonable to expect that a home with more, but smaller, bedrooms would be considered less desirable.
+
+### Multicollinearity
+
+An extreme case of correlated variables produces multicollinearity — a condition in which there is redundance among the predictor variables. Perfectmulticollinearity occurs when one predictor variable can be expressed as a linear combination of others. 
+
+Multicollinearity occurs when:
+* A variable is included multiple times by error.
+* P dummies, instead of P – 1 dummies, are created from a factor variable
+* Two variables are nearly perfectly correlated with one another.
+
+### Confounding Variables
+
+ZipGroup is clearly an important variable: a home in the most expensive zip code group is estimated to have a higher sales price by almost $340,000. The coefficients of SqFtLot and Bathrooms are now positive and adding a bathroom increases the sale price by $7,500.
+
+### Interactions and Main Effects
+
+For example, the model fit to the King County Housing Data in “Confounding Variables” includes several variables as main effects, including ZipCode. Location in real estate is everything, and it is natural to presume that the relationship between, say, house size and the sale price depends on location. A big house built in a low-rent district is not going to retain the same value as a big house built in an expensive area. You include interactions between variables in R using the \* operator. For the King County data, the following fits an interaction between SqFtTotLiving and ZipGroup.
+
+Location and house size appear to have a strong interaction. For a home in the lowest ZipGroup, the slope is the same as the slope for the main effect SqFtTotLiving, which is $177 per square foot. For a home in the highest ZipGroup, the slope is the sum of the main effect plus SqFtTotLiving:ZipGroup5, or $177 + $230 = $447 per square foot. In other words, adding a square foot in the most expensive zip code group boosts the predicted sale price by a factor of almost 2.7, compared to the boost in the least expensive zip code group.
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* Because of correlation between predictors, care must be taken in the interpretation of the coefficients in multiple linear regression.
+* Multicollinearity can cause numerical instability in fitting the regression equation.
+* A confounding variable is an important predictor that is omitted from a model and can lead to a regression equation with spurious relationships.
+* An interaction term between two variables is needed if the relationship between the variables and the response is interdependent.
+
+-----------------------------------------------------------
+
+### Testing the Assumptions: Regression Diagnostics
+
+These steps do not directly address predictive accuracy, but they can provide useful insight in a predictive setting.
+ 
+**Standardized Residuals**:
+Residuals divided by the standard error of the residuals
+
+**Outliers**:
+Records (or outcome values) that are distant from the rest of the data (or the predicted outcome).
+
+**Influential Value**:
+A value or record whose presence or absence makes a big difference in the regression equation.
+
+**Leverage**:
+The degree of influence that a single record has on a regression equation.
+
+**Non-normal Residuals**:
+Non-normally distributed residuals can invalidate some technical requirements of regression, but are usually not a concern in data science.
+
+**Heteroskedasticity**:
+When some ranges of the outcome experience residuals with higher variance (may indicate a predictor missing from the equation).
+
+**Partial Residual Plots**:
+A diagnostic plot to illuminate the relationship between the outcome variable and a single predictor.
+
+### Outliers
+
+Generally speaking, an extreme value, also called an outlier, is one that is distant from most of the other observations. 
+You can detect outliers by examining the standardized residual, which is the residual divided by the standard error of the residuals.
+
+The biggest overestimate from the model is more than four standard errors above the regression line, corresponding to an overestimate of $757,753. 
+
+In this case, it appears that there is something wrong with the record: a house of that size typically sells for much more than $119,748 in that zip code.
+
+Below image shows an excerpt from the statuatory deed from this sale: it is clear that the sale involved only partial interest in the property. In this case, the outlier corresonds to a sale that is anomalous and should not be included in the regression.
+
+![Outlier.](/im/outlier.png) 
+
+:star: For big data problems, outliers are generally not a problem in fitting the regression to be used in predicting new data. However, outliers are central to anomaly detection, where finding outliers is the whole point. The outlier could also correspond to a case of fraud or an accidental action. In any case, detecting outliers can be a critical business need.
+
+### Influential Values
+
+A value whose absence would significantly change the regression equation is termed an infuential observation.
+
+The solid line corresponds to the regression with all the data, while the dashed line corresonds to the regression with the point in the upper-right removed. Clearly, that data value has a huge influence on the regression even though it is not associated with a large outlier (from the full regression). This data value is considered to have high leverage on the regression.
+
+![Influential removed.](/im/inftable.png) 
+
+Above table compares the regression with the full data set and with highly influential data points removed. The regression coefficient for Bathrooms changes quite dramatically.
+
+### Heteroskedasticity, Non-Normality and Correlated Errors
+
+Heteroskedasticity is the lack of constant residual variance across the range of the predicted values. In other words, errors are greater for some portions of the range than for others.
+
+Evidently, the variance of the residuals tends to increase for higher-valued homes, but is also large for lower-valued homes. This plot indicates that lm_98105 has heteroskedastic errors.
+
+:star2: **WHY WOULD A DATA SCIENTIST CARE ABOUT HETEROSKEDASTICITY?**
+Heteroskedasticity indicates that prediction errors differ for different ranges of the predicted value, and may suggest an incomplete model. For example, the heteroskedasticity in lm_98105 may indicate that the regression has left something unaccounted for in high- and low-range homes.
+
+:star: Even though a regression may violate one of the distributional assumptions, should we care? Most often in data science, the interest is primarily in predictive accuracy, so some review of heteroskedasticity may be in order. You may discover that there is some signal in the data that your model has not captured. Satisfying distributional assumptions simply for the sake of validating formal statistical inference (p-values, F-statistics, etc.), however, is not that important for the data scientist
+
+:star2: **SCATTERPLOT SMOOTHERS**
+Regression is about modeling the relationship between the response and predictor variables. In evaluating a regression model, it is useful to use a scatterplot smoother to visually highlight relationships between two variables
+
+### Partial Residual Plots and Nonlinearity
+
+Partial residual plots are a way to visualize how well the estimated fit explains the relationship between a predictor and the outcome.
+
+Along with detection of outliers, this is probably the most important diagnostic for data scientists. 
+
+The basic idea of a partial residual plot is to isolate the relationship between a predictor variable and the response, taking into account all of the other predictor variables.
+
+![Partial Residual Formula](/im/partres.png) 
+
+The partial residual is an estimate of the contribution that SqFtTotLiving adds to the sales price. The relationship between SqFtTotLiving and the sales price is evidently nonlinear. The regression line underestimates the sales price for homes less than 1,000 square feet and overestimates the price for homes between 2,000 and 3,000 square feet.
+
+There are too few data points above 4,000 square feet to draw conclusions for those homes.
+
+:star2: This nonlinearity makes sense in this case: adding 500 feet in a small home makes a much bigger difference than adding 500 feet in a large home. This suggests that, instead of a simple linear term for SqFtTotLiving, a nonlinear term should be considered
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* While outliers can cause problems for small data sets, the primary interest with outliers is to identify problems with the data, or locate anomalies.
+* Single records (including regression outliers) can have a big influence on a regression equation with small data, but this effect washes out in big data.
+* If the regression model is used for formal inference (p-values and the like), then certain assumptions about the distribution of the residuals should be checked. In general, however, the distribution of residuals is not critical in data science.
+* The partial residuals plot can be used to qualitatively assess the fit for each regression term, possibly leading to alternative model specification.
+
+-----------------------------------------------------------
+
+### Polynomial and Spline Regression
+
+The relationship between the response and a predictor variable is not necessarily linear. The response to the dose of a drug is often nonlinear: doubling the dosage generally doesn’t lead to a doubled response. The demand for a product is not a linear function of marketing dollars spent since, at some point, demand is likely to be saturated. There are several ways that regression can be extended to capture these nonlinear effects
+
+**Polynomial Regression**:
+Adds polynomial terms (squares, cubes, etc.) to a regression.
+
+**Spline Regression**:
+Fitting a smooth curve with a series of polynomial segments.
+
+**Knots**:
+Values that separate spline segments
+
+**Generalized Additive Models**:
+Spline models with automated selection of knots.
+
+:star2: Nonlinear regression models are harder and computationally more intensive to fit, since they require numerical optimization. For this reason, it is generally preferred to use a linear model if possible
+
+### Polynomial
+
+Polynomial regression involves including polynomial terms to a regression equation.
+
+![Polynomial Regression Formula](/im/polyreg.png) 
+
+The fitted line more closely matches the smooth of the partial residuals as compared to a linear fit.
+
+### Splines
+
+Polynomial regression only captures a certain amount of curvature in a nonlinear relationship. Adding in higher-order terms, such as a cubic quartic polynomial, often leads to undesirable “wiggliness” in the regression equation. An alternative, and often superior, approach to modeling nonlinear relationships is to use splines.
+
+Splines provide a way to smoothly interpolate between fixed points. Splines were originally used by draftsmen to draw a smooth curve, particularly in ship and aircraft building.
+
+The technical definition of a spline is a series of piecewise continuous polynomials.
+
+The polynomial pieces are smoothly connected at a series of fixed points in a predictor variable, referred to as knots. Formulation of splines is much more complicated than polynomial regression. 
+
+:star2: Two parameters need to be specified: the degree of the polynomial and the location of the knots. In this case, the predictor SqFtTotLiving is included in the model using a cubic spline (degree=3). By default, bs places knots at the boundaries; in addition, knots were also placed at the lower quartile, the median quartile, and the upper quartile.
+
+In contrast to the polynomial model, the spline model more closely matches the smooth, demonstrating the greater flexibility of splines. In this case, the line more closely fits the data. 
+
+Does this mean the spline regression is a better model? Not necessarily: it doesn’t make economic sense that very small homes (less than 1,000 square feet) would have higher value than slightly larger homes. This is possibly an artifact of a confounding variable;
+
+### Generalized Additive Models (GAM)
+
+Suppose you suspect a nonlinear relationship between the response and a predictor variable, either by a priori knowledge or by examining the regression diagnostics. Polynomial terms may not flexible enough to capture the relationship, and spline terms require specifying the knots. Generalized additive models, or GAM, are a technique to automatically fit a spline regression. 
+
+-----------------------------------------------------------
+
+:star: **KEY IDEAS** :
+* Outliers in a regression are records with a large residual.
+* Multicollinearity can cause numerical instability in fitting the regression equation
+* A confounding variable is an important predictor that is omitted from a model and can lead to a regression equation with spurious relationships.
+* An interaction term between two variables is needed if the effect of one variable depends on the level of the other.
+* Polynomial regression can fit nonlinear relationships between predictors and the outcome variable.
+* Splines are series of polynomial segments strung together, joining at knots
+* Generalized additive models (GAM) automate the process of specifying the knots in splines.
+
+-----------------------------------------------------------
+ 
+### SUMMARY
+**The fundamental form is linear: each predictor variable has a coefficient that describes a linear relationship between the predictor and the outcome.**
+**More advanced forms of regression, such as polynomial and spline regression, permit the relationship to be nonlinear.**
+
+-----------------------------------------------------------
